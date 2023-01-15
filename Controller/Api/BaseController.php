@@ -1,11 +1,13 @@
 <?php
 
-class BaseController
+abstract class BaseController
 {
     public function __call($name, $arguments)
     {
         $this->sendOutput('', array('HTTP/1.1 404 Not Found'));
     }
+
+    abstract function process(array $params) : void;
 
     protected function getUriSegments()
     {
@@ -27,6 +29,6 @@ class BaseController
                 header($header);
         
         echo $data;
-        exit();
+        exit;
     }
 }
