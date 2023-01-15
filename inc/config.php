@@ -1,6 +1,6 @@
 <?php
 
-define("DB_HOST", "host");
-define("DB_DATABASE", "database_name");
-define("DB_USER", "user_name");
-define("DB_PSWD", "password");
+define("DB_HOST", "localhost");
+define("DB_DATABASE", "trackmania_db");
+define("DB_USER", "root");
+define("DB_PSWD", "");

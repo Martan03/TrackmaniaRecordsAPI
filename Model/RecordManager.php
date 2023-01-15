@@ -1,8 +1,6 @@
 <?php
 
-require_once PROJECT_ROOT_PATH . "/model/Db.php";
-
-class RecordsModel extends Db
+class RecordManager
 {
     /**
      * Loads record by its id from database
@@ -11,7 +9,7 @@ class RecordsModel extends Db
      */
     public function getRecord(int $id) : ?array
     {
-        $record = $this->queryOne('
+        $record = Db::queryOne('
             SELECT *
             FROM `records`
             WHERE `record_id` = ?
@@ -27,7 +25,7 @@ class RecordsModel extends Db
      */
     public function getRecords() : array
     {
-        return $this->queryAll('
+        return Db::queryAll('
             SELECT *
             FROM `records`
         ');
@@ -41,7 +39,7 @@ class RecordsModel extends Db
      */
     public function getRecordsBySeasonLevel(int $season, int $level) : array
     {
-        return $this->queryAll('
+        return Db::queryAll('
             SELECT *
             FROM `records`
             WHERE `record_season` = ? AND `record_level` = ?
@@ -59,7 +57,7 @@ class RecordsModel extends Db
         $records = array();
         for ($i = 0; $i < 25; $i++)
         {
-            $rec = $this->queryOne('
+            $rec = Db::queryOne('
                 SELECT *
                 FROM `records`
                 WHERE `record_season` = ? AND `record_level` = ?
@@ -99,7 +97,7 @@ class RecordsModel extends Db
      */
     public function addRecord(array $record) : void
     {
-        $this->insert("records", $record);
+        Db::insert("records", $record);
     }
 
     /**
@@ -108,7 +106,7 @@ class RecordsModel extends Db
      */
     public function editRecord(array $record) : void
     {
-        $this->update("records", $record,
+        Db::update("records", $record,
                    "WHERE `record_id` = ?",
                    array($record['record_id']));
     }
@@ -119,7 +117,7 @@ class RecordsModel extends Db
      */
     public function removeRecord(int $id) : void
     {
-        $this->query('
+        Db::query('
             DELETE FROM `records`
             WHERE `record_id` = ?
         ', array($id));
@@ -134,14 +132,17 @@ class RecordsModel extends Db
     {
         $errors = array();
         if (!isset($record['record_holder']) || empty($record['record_holder']))
-            $errors['holder'] = 'Invalid';
+            $errors['record_holder'] = 'Invalid';
         if (!isset($record['record_time']) || empty($record['record_time']))
-            $errors['holder'] = 'Invalid';
+            $errors['record_holder'] = 'Invalid';
         
         if (!empty($errors))
             return $errors;
         
-        $this->addRecord($record);
+        if (isset($record['record_id']) && !empty($record['record_id']))
+            $this->editRecord($record);
+        else
+            $this->addRecord($record);
         return $errors;
     }
 }
