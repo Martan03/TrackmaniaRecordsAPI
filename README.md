@@ -5,19 +5,13 @@ can write down the records and then compete with each other. One of my friends w
 
 # API Calls:
 ## Records:
-Link starting with
-```
-website/record
-```
-### Arguments:
-*No argument*: returns all records from the database
-#### Get
-Get record using ID
-```get?record_id=<id>```: returns record with given ID  
-```get?season_id=<id>```: returns best times from each level in given season
-**get?season_id=<id>&level=<level>**: returns all times in given level of the given season
-#### Manage
-**manage?record_holder=<name>&record_time=<time>&record_season=<id>&record_level=<level>**: creates new record
-**manage?record_id=<id>**: edits record with given ID, add parameters you want to edit (record_holder=Tester)
+```/record```: returns all records from the database  
+### Get
+```/record/get?record_id=<id>```: returns record with given ID  
+```record/get?season_id=<id>```: returns best times from each level in given season  
+```record/get?season_id=<id>&level=<level>```: returns all times in given level of the given season  
+### Manage
+```/record/manage?record_holder=<name>&record_time=<time>&record_season=<id>&record_level=<level>```: creates new record  
+```/record/manage?record_id=<id>```: edits record with given ID, add parameters you want to edit (record_holder=Tester)  
 #### Remove
-**remove?record_id=<id>**: removes record with given ID
+```/record/remove?record_id=<id>```: removes record with given ID
