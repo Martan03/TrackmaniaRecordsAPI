@@ -31,5 +31,5 @@ If URL contains ```season_id```, than it edits existing season
 
 ## Links
 - **Author:** [Martan03](https://github.com/Martan03)
-- **GitHub repository:** [TrackmaniaRecords](https://github.com/Martan03/TrackmaniaRecords)
+- **GitHub repository:** [TrackmaniaRecordsAPI](https://github.com/Martan03/TrackmaniaRecordsAPI)
 - **Author website:** [martan03.github.io/Portfolio](https://martan03.github.io/Portfolio/)
