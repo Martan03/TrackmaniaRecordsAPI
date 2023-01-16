@@ -24,10 +24,10 @@ If URL contains ```record_id```, than it edits existing record
 ```/season/get?season_year=<year>&season_name=<name>```: returns season with given Year and Name  
 ### Manage
 If URL contains ```season_id```, than it edits existing season  
-```/season/manage?season_year=<year>&season_name=<name>```: creates new season
-```/season/manage?season_id=<id>&season_name=<name>...```: edits season with given ID, all parameters must be included
+```/season/manage?season_year=<year>&season_name=<name>```: creates new season  
+```/season/manage?season_id=<id>&season_name=<name>...```: edits season with given ID, all parameters must be included  
 ### Remove
-```/season/remove?season_id=<id>```: remove season with given ID
+```/season/remove?season_id=<id>```: remove season with given ID  
 
 ## Links
 - **Author:** [Martan03](https://github.com/Martan03)
