@@ -8,9 +8,10 @@ class SeasonPresenter extends Presenter
         {
             case 'GET':
                 $this->processGet($params);
-                break;
+                exit;
             default:
-                break;
+                $this->sendOutput('', array('HTTP/1.1 404 Not Found'));
+                exit;
         }
     }
 
@@ -21,7 +22,7 @@ class SeasonPresenter extends Presenter
     {
         $seasonManager = new SeasonManager();
 
-        // if not parameters set, return all season
+        // if no parameters given, return all season
         if (empty($params))
         {
             $this->sendOutput(

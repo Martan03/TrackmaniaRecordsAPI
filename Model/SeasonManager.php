@@ -95,6 +95,7 @@ class SeasonManager
     /**
      * Deletes season from database by given id
      * @param array $params data array containing index season_id
+     * @return int number of effected rows
      */
     public function removeSeason(array $data) : int
     {
@@ -109,7 +110,7 @@ class SeasonManager
 
     /**
      * Adds or edits season
-     * @param array $season data
+     * @param array $data season data
      * @return array errors array
      */
     public function submitDialog(array $data) : array
@@ -137,7 +138,7 @@ class SeasonManager
             return array();
         }
 
-        $exists = $this->getSeason($data['season_year'], $data['season_name']);
+        $exists = $this->getSeasonByYearName($data['season_year'], $data['season_name']);
         if ($exists)
         {
             $errors['exist'] = true;

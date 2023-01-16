@@ -3,11 +3,31 @@
 class RecordManager
 {
     /**
+     * Loads record from database
+     * If record_id, returns record with this id
+     * If season_id and level, returns all times of given level
+     * If season_id, returns best times from each level of the season
+     * @param array $data containing record_id or both season_id and level or season_id
+     * @return array loaded record, null if not found
+     */
+    public function getRecord(array $data) : ?array
+    {
+        if (isset($data['record_id']) && !empty($data['record_id']))
+            return $this->getRecordById($data['record_id']);
+        if (isset($data['season_id']) && !empty($data['season_id']) &&
+            isset($data['level']) && !empty($data['level']))
+            return $this->getLevelRecords($data['season_id'], $data['level']);
+        if (isset($data['season_id']) && !empty($data['season_id']))
+            return $this->getSeasonRecords($data['season_id']);
+        return null;
+    }
+
+    /**
      * Loads record by its id from database
      * @param int $id of the record to be loaded
      * @return array loaded records, null if not found
      */
-    public function getRecord(int $id) : ?array
+    public function getRecordById(int $id) : ?array
     {
         $record = Db::queryOne('
             SELECT *
@@ -32,12 +52,12 @@ class RecordManager
     }
 
     /**
-     * Loads all records from given level and season from database
+     * Loads all times from given level and season from database
      * @param int $id of the season
      * @param int $level where record have been set
-     * @return array level records
+     * @return array level times
      */
-    public function getRecordsBySeasonLevel(int $season, int $level) : array
+    public function getLevelRecords(int $season, int $level) : array
     {
         return Db::queryAll('
             SELECT *
@@ -52,7 +72,7 @@ class RecordManager
      * @param int $id of the season
      * @return array best time of each level
      */
-    public function getSeasonLevelsRecords(int $season) : array
+    public function getSeasonRecords(int $season) : array
     {
         $records = array();
         for ($i = 0; $i < 25; $i++)
@@ -115,34 +135,59 @@ class RecordManager
      * Deletes record from database by given id
      * @param int $id of the record
      */
-    public function removeRecord(int $id) : void
+    public function removeRecord(array $data) : int
     {
-        Db::query('
+        if (!isset($data['record_id']) || empty($data['record_id']))
+            return 0;
+
+        return Db::query('
             DELETE FROM `records`
             WHERE `record_id` = ?
-        ', array($id));
+        ', array($data['record_id']));
     }
 
     /**
      * Adds or edits record
-     * @param array $record to be submited
+     * @param array $data record data
      * @return array errors array
      */
-    public function submitDialog(array $record) : array
+    public function submitDialog(array $data) : array
     {
         $errors = array();
-        if (!isset($record['record_holder']) || empty($record['record_holder']))
+        $seasonManager = new SeasonManager();
+
+        if (!isset($data['record_holder']) || empty($data['record_holder']))
             $errors['record_holder'] = 'Invalid';
-        if (!isset($record['record_time']) || empty($record['record_time']))
-            $errors['record_holder'] = 'Invalid';
+        if (!isset($data['record_time']) || empty($data['record_time']))
+            $errors['record_time'] = 'Invalid';
+        if (!isset($data['record_season']) || empty($data['record_season']))
+            $errors['record_season'] = 'Invalid';
+        else if (!$seasonManager->getSeasonById($data['record_season']))
+            $errors['record_season'] = 'Invalid';
+        if (!isset($data['record_level']) || empty($data['record_level']))
+            $errors['record_level'] = 'Invalid';
+        else if ($data['record_level'] <= 0 || $data['record_level'] > 25)
+            $errors['record_level'] = 'Invalid';
         
         if (!empty($errors))
             return $errors;
+
+        $record = array(
+            'record_id' => '',
+            'record_holder' => $data['record_holder'],
+            'record_time' => $data['record_time'],
+            'record_season' => $data['record_season'],
+            'record_level' => $data['record_level']
+        );
         
-        if (isset($record['record_id']) && !empty($record['record_id']))
-            $this->editRecord($record);
-        else
+        if (!isset($data['record_id']) || empty($data['record_id']))
+        {
             $this->addRecord($record);
-        return $errors;
+            return array();
+        }
+        
+        $record['record_id'] = $data['record_id'];
+        $this->editRecord($record);
+        return array();
     }
 }
