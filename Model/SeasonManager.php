@@ -3,12 +3,34 @@
 class SeasonManager
 {
     /**
+     * Loads season from database using given data
+     * If data contains season_id, uses this to find season
+     * If data contains season_year and season_name, uses this
+     * @param array $data containing either season_id or both season_year and season_name
+     * @return array loaded season, returns null if not found
+     */
+    public function getSeason(array $data) : ?array
+    {
+        if (isset($data['season_id']) && !empty($data['season_id']))
+            return $this->getSeasonById($data['season_id']);
+        if (isset($data['season_year']) && !empty($data['season_year']) &&
+            isset($data['season_name']) && !empty($data['season_name']))
+        {
+            return $this->getSeasonByYearName(
+                $data['season_year'],
+                $data['season_name']
+            );
+        }
+        return null;
+    }
+
+    /**
      * Loads season from database by its name and year
      * @param string $year of the season
      * @param string $name of the season
      * @return array loaded season, returns null if not found
      */
-    public function getSeason(string $year, string $name) : ?array
+    public function getSeasonByYearName(string $year, string $name) : ?array
     {
         $season = Db::queryOne('
             SELECT *
@@ -72,14 +94,17 @@ class SeasonManager
 
     /**
      * Deletes season from database by given id
-     * @param int $id of the season
+     * @param array $params data array containing index season_id
      */
-    public function removeSeason(int $id) : void
+    public function removeSeason(array $data) : int
     {
-        Db::query('
+        if (!isset($data['season_id']) || empty($data['season_id']))
+            return 0;
+
+        return Db::query('
             DELETE FROM `seasons`
             WHERE `season_id` = ?
-        ', array($id));
+        ', array($data['season_id']));
     }
 
     /**
@@ -87,31 +112,36 @@ class SeasonManager
      * @param array $season data
      * @return array errors array
      */
-    public function submitDialog(array $season) : array
+    public function submitDialog(array $data) : array
     {
         $errors = array();
 
-        if (!isset($_POST['season_year']) || empty($_POST['season_year']))
-            $errors['year'] = "Invalid";
-        if (!isset($_POST['season_name']) || empty($_POST['season_name']))
-            $errors['name'] = "Name must be filled in";
-
-        $exists = $this->getSeason($season['season_year'], $season['season_name']);
+        if (!isset($data['season_year']) || empty($data['season_year']))
+            $errors['season_year'] = "Invalid";
+        if (!isset($data['season_name']) || empty($data['season_name']))
+            $errors['season_name'] = "Invalid";
         
         if (!empty($errors))
             return $errors;
 
-        if (isset($season['season_id']) && !empty($season['season_id']))
+        $season = array(
+            'season_id' => '',
+            'season_year' => $data['season_year'],
+            'season_name' => $data['season_name']
+        );
+        
+        if (isset($data['season_id']) && !empty($data['season_id']))
         {
+            $season['season_id'] = $data['season_id'];
             $this->editSeason($season);
             return array();
         }
 
+        $exists = $this->getSeason($data['season_year'], $data['season_name']);
         if ($exists)
         {
-            if ($_SESSION['lang'] == 'cs')
-                return array("exists" => "Tato sezóna již existuje");
-            return array("exists" => "This season already exists");
+            $errors['exist'] = true;
+            return $errors;
         }
 
         $this->addSeason($season);
