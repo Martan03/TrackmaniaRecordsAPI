@@ -1,7 +1,9 @@
 # TrackmaniaRecordsAPI
 
-I'm competitive type of person, so I decided to make [Trackmania Records website](https://github.com/Martan03/TrackmaniaRecords) so me and my friends 
-can write down the records and then compete with each other. One of my friends wanted to make custom website for this, so that's why I created this API.
+I'm competitive type of person so I decided to make [Trackmania Records website](https://github.com/Martan03/TrackmaniaRecords) so me and my friends 
+could set records and then compete with each other. One of my friends wanted to make custom website for it, so I made this API.
+
+Also, I did all the calls using GET (my friend ask me to do it like this)
 
 # API Calls:
 ## Records:
