@@ -13,8 +13,8 @@ website/record
 *No argument*: returns all records from the database
 #### Get
 Get record using ID
-```get?record_id=<id>```
-**get?season_id=<id>**: returns best times from each level in given season
+```get?record_id=<id>```: returns record with given ID  
+```get?season_id=<id>```: returns best times from each level in given season
 **get?season_id=<id>&level=<level>**: returns all times in given level of the given season
 #### Manage
 **manage?record_holder=<name>&record_time=<time>&record_season=<id>&record_level=<level>**: creates new record
